@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
 import AppDownload from '../../components/AppDownload/AppDownload';
 import Menu from '../../components/ExploreMenu/Menu';
