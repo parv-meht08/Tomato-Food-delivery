@@ -8,6 +8,7 @@ import Cart from './pages/Cart/Cart';
 import Home from './pages/Home/Home';
 import Order from './pages/PlaceOrder/Order';
 import Verify from './pages/Verify/Verify';
+import MyOrders from './pages/MyOrders/MyOrders';
 
 const App = () => {
   //display popup for login
@@ -23,6 +24,7 @@ const App = () => {
           <Route path="/cart" element={<Cart />} />
           <Route path="/order" element={<Order />} />
           <Route path="/verify" element={<Verify />} />
+          <Route path="/myorders" element={<MyOrders />} />
         </Routes>
 
       </div>

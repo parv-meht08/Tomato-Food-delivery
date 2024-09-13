@@ -1,45 +1,37 @@
-import React, { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+/* eslint-disable no-unused-vars */
+import React, { useContext, useEffect } from 'react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
+import { StoreContext } from '../../context/StoreContext';
+import './Verify.css'
 
 const Verify = () => {
-    const { search } = useLocation();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const success = searchParams.get("success")
+    const orderId = searchParams.get("orderId")
+    const {url} = useContext(StoreContext);
     const navigate = useNavigate();
-    const searchParams = new URLSearchParams(search);
-    const success = searchParams.get('success');
-    const orderId = searchParams.get('orderId');
+    
+    const verifyPayement = async () => {
+        const response = await axios.post(url + "/api/order/verify", { success, orderId });
+        if (response.data.success) {
+            navigate("/myorders");
+        } else {
+            navigate("/");
+        }
+    };
+    
 
     useEffect(() => {
-        const verifyPayment = async () => {
-            try {
-                const { data } = await axios.post(
-                    'http://localhost:5000/api/orders/verify-order',
-                    {
-                        orderId,
-                        success,
-                    }
-                );
-                
-                if (data.success) {
-                    alert('Payment successful!');
-                    navigate('/orders');
-                } else {
-                    alert('Payment verification failed: ' + data.message);
-                    navigate('/cart');
-                }
-            } catch (error) {
-                console.error('Error verifying payment:', error);
-                alert('Error while verifying payment. Please try again later.');
-                navigate('/cart');
-            }
-        };
-
-        verifyPayment();
-    }, [orderId, success, navigate]);
-
+        verifyPayement();
+    }, []);
+    
+    
     return (
-        <div>
-            <h1>Verifying Payment...</h1>
+        <div className='verify'>
+           <div className="spinner">
+
+           </div>
         </div>
     );
 };

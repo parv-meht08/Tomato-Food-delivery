@@ -1,9 +1,10 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { StoreContext } from '../../context/StoreContext';
 import './PlaceOrder.css';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const PlaceOrder = () => {
   const { getTotalCartAmount, token, food_list, cartItems, url } = useContext(StoreContext);
@@ -28,40 +29,44 @@ const PlaceOrder = () => {
 
   const placeOrder = async (event) => {
     event.preventDefault();
-    
+
     // Prepare the order items
     let orderItems = [];
     food_list.forEach((item) => {
       if (cartItems[item._id] > 0) {
-        let itemInfo = { ...item }; // Create a copy of the item object
+        let itemInfo = item;
         itemInfo["quantity"] = cartItems[item._id];
         orderItems.push(itemInfo);
       }
-    });
+    })  
 
     // Create the order data object
     let orderData = {
       address: data,
       item: orderItems,
-      amount: getTotalCartAmount() + 2, // Include delivery fee
-    };
+      amount: getTotalCartAmount() + 2,
+    }
 
-    try {
-      // Send order data to the backend
-      let response = await axios.post(url + "/api/order/place", orderData, { headers: { token } });
-      
-      // Redirect to payment session if successful
-      if (response.data.success) {
-        const { session_url } = response.data;
-        window.location.replace(session_url);
-      } else {
-        alert("Error");
-      }
-    } catch (error) {
-      console.error("Error placing order:", error);
-      alert("Failed to place order. Please try again.");
+    let response = await axios.post(url + "/api/order/place", orderData, {headers: {token}})
+    if (response.data.success) {
+      const {session_url} = response.data;
+      window.location.replace(session_url)
+    }
+    else{
+      alert("Error while sending the user")
     }
   };
+
+  const navigate = useNavigate();
+
+  useEffect(()=>{
+    if (!token) {
+      navigate('/cart')
+    }
+    else if(getTotalCartAmount() === 0){
+      navigate('/cart')
+    }
+  }, [token])
 
   return (
     <form onSubmit={placeOrder} action="" className='place-order'>
@@ -110,4 +115,4 @@ const PlaceOrder = () => {
   );
 };
 
-export default PlaceOrder;
+export default PlaceOrder;  
